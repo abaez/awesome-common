@@ -1,5 +1,6 @@
 local wibox = require("wibox")
 local awful = require("awful")
+local naughty = require("naughty")
 
 pomodoro = {}
 
@@ -46,7 +47,7 @@ function p:set_time(t)
         t = os.date("%M:%S", t)
     end
 
-    self.widget:set_text(string.format("Pomodoro: <b>%s</b>", t))
+    self.widget:set_text(string.format(" Pomodoro:%s", t))
 end
 
 function p:notify(dialog, duration, status)
@@ -54,7 +55,7 @@ function p:notify(dialog, duration, status)
         bg = "#ff0000",
         fg = "#aaaaaa",
         title = dialog.title,
-        text = dialoge.text,
+        text = dialog.text,
         timeout = 10 --in seconds
     }
 
@@ -90,7 +91,7 @@ p.timer:connect_signal("timeout", function()
     p.status.missing = p.status.missing - (now - p.last)
     p.last = now
 
-    if p.status.left > 0 then
+    if p.status.missing > 0 then
         p:set_time(p.status.missing)
     else
         if p.status[1] then

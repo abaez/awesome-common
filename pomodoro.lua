@@ -46,7 +46,7 @@ function p:set_time(t)
         t = os.date("%M:%S", t)
     end
 
-    self.widget.set_text(string.format("Pomodoro: <b>%s</b>", t))
+    self.widget:set_text(string.format("Pomodoro: <b>%s</b>", t))
 end
 
 function p:notify(dialog, duration, status)
@@ -68,10 +68,11 @@ end
 
 p:set_time(p.conf.work)
 p.widget:buttons(
-    awful.util.table.join( {}, 1, function()
+    awful.util.table.join(
+        awful.button({}, 1, function()
             p.last = os.time()
             p.timer:start()
-        end,
+        end),
         awful.button({}, 2, function()
             p.timer:stop()
         end),
@@ -80,7 +81,8 @@ p.widget:buttons(
             p.status.missing = p.conf.work
             p:set_time(p.conf.work)
         end)
-))
+    )
+)
 
 
 p.timer:connect_signal("timeout", function()

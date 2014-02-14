@@ -24,7 +24,7 @@ p.status  = {
 
 p.dialog = {
     pause = {
-        title = "The break has finished.",
+        title = "The break has fiXnished.",
         text = "Let's get that coding rolling!"
     },
 
@@ -33,7 +33,6 @@ p.dialog = {
         test = "Time to take a break human!"
     }
 }
-
 
 
 p.widget = wibox.widget.textbox()
@@ -50,13 +49,17 @@ function p:set_time(t)
     self.widget:set_text(string.format(" Pomodoro:%s", t))
 end
 
+
 function p:notify(dialog, duration, status)
     naughty.notify {
         bg = "#ff0000",
         fg = "#aaaaaa",
         title = dialog.title,
         text = dialog.text,
-        timeout = 10 --in seconds
+        timeout = 10, --in seconds
+        height = 720, -- make it annoying
+        width = 1280
+
     }
 
     self.status.missing = duration

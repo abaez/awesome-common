@@ -9,26 +9,27 @@ local awful = require("awful")
 local naughty = require("naughty")
 
 local pomodoro = {}
-
 p = pomodoro
 
--- quick convert to seconds
+--- quick convert to seconds
+-- @param min the amounts you want to be converted to seconds.
 local tosec = function(min) return min * 60 end
 
--- in minutes settings for pomodoro. use tosec to convert to seconds
-p.conf = {
+--- in minutes settings for pomodoro. use tosec to convert to seconds
+local conf = {
     pause   = tosec(5),
     work    = tosec(35),
     limit   = tosec(60) -- limit for call
 }
 
-p.status  = {
+--- the status of the widget
+local status  = {
     true,
     missing = p.conf.work
 }
 
-
-p.dialog = {
+--- dialog to be shown
+local dialog = {
     pause = {
         title = "The break has finished.",
         text = "Let's get that coding rolling!"
@@ -37,13 +38,18 @@ p.dialog = {
     work = {
         title = "Pomodoro has finished.",
         test = "Time to take a break human!"
-    }
+    },
+
 }
 
+function p:new()
+  self.conf = conf
+  self.status = {true, missing = self.conf.work}
+  self.dialog = dialog
 
-p.widget = wibox.widget.textbox()
-p.timer = timer {timeout = 1}
-
+  self.widget = wibox.widget.textbox()
+  self.timer  = timer{timeout = 1}
+end
 
 function p:set_time(t)
     if t >= self.conf.limit then
@@ -52,9 +58,8 @@ function p:set_time(t)
         t = os.date("%M:%S", t)
     end
 
-    self.widget:set_text(string.format(" Pomodoro:%s", t))
+    self.widget:set_text(string.format(" Pomodoro: %s", t))
 end
-
 
 function p:notify(dialog, duration, status)
     naughty.notify {
@@ -70,47 +75,49 @@ function p:notify(dialog, duration, status)
 
     self.status.missing = duration
     self.status[1] = status
-
     self.set_time(self, duration)
-    -- p:set_time(duration)
 end
 
+function p:set()
+  self:new()
+  self:set_time(self.conf.work)
 
-p:set_time(p.conf.work)
-p.widget:buttons(
+  -- sets buttons
+  self.widget:button(
     awful.util.table.join(
-        awful.button({}, 1, function()
-            p.last = os.time()
-            p.timer:start()
-        end),
-        awful.button({}, 2, function()
-            p.timer:stop()
-        end),
-        awful.button({}, 3, function()
-            p.timer:stop()
-            p.status.missing = p.conf.work
-            p:set_time(p.conf.work)
-        end)
+      awful.button({}, 1, function()
+        self.last = os.time()
+        self.timer:start()
+      end),
+      awful.button({}, 2, function()
+        self.timer:stop()
+      end),
+      awful.button({}, 3, function()
+        self.timer:stop()
+        self.status.missing = self.conf.work
+        self:set_time(self.conf.work)
+      end)
     )
-)
+  )
 
-
-p.timer:connect_signal("timeout", function()
+  -- sets notification
+  self.timer:connect_signal("timeout", function()
     local now = os.time()
-    p.status.missing = p.status.missing - (now - p.last)
-    p.last = now
+    self.status.missing = self.status.missing - (now - self.last)
+    self.last = now
 
-    if p.status.missing > 0 then
-        p:set_time(p.status.missing)
+    if self.status.missing > 0 then
+      self:set_time(self.status.missing)
     else
-        if p.status[1] then
-            p:notify(p.dialog.work, p.conf.pause, false)
-        else
-            p:notify(p.dialog.pause, p.conf.work, true)
-        end
-        p.timer:stop()
+      if self.status[1] then
+        self:notify(self.dialog.work, self.conf.pause, false)
+      else
+        self:notify(self.dialog.pause, self.conf.work, true)
+      end
+      self.timer:stop()
     end
-end)
+  end)
+end
 
 
 return pomodoro

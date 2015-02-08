@@ -1,5 +1,5 @@
 --- A quick little screenshot producer for awesome.
--- @author Alejandro Baez <alejan.baez@gmail.com>
+-- @author [Alejandro Baez](https://twitter.com/a_baez)
 -- @copyright 2015
 -- @license MIT (see @{LICENSE})
 -- @module screenshot

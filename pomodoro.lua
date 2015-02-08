@@ -1,8 +1,14 @@
+--- a pomodoro for awesome.
+-- @author [Alejandro Baez](https://twitter.com/a_baez)
+-- @copyright 2015
+-- @license MIT (see LICENSE)
+-- @module pomodoro
+
 local wibox = require("wibox")
 local awful = require("awful")
 local naughty = require("naughty")
 
-pomodoro = {}
+local pomodoro = {}
 
 p = pomodoro
 
@@ -24,7 +30,7 @@ p.status  = {
 
 p.dialog = {
     pause = {
-        title = "The break has fiXnished.",
+        title = "The break has finished.",
         text = "Let's get that coding rolling!"
     },
 

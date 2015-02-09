@@ -50,7 +50,7 @@ function p:new()
   self.dialog = dialog
 
   self.widget = wibox.widget.textbox()
-  self.timer  = timer()
+  self.timer  = timer{}
 end
 
 function p:set_time(t)
@@ -81,7 +81,7 @@ function p:set()
   self:set_time(self.conf.work)
 
   -- sets buttons
-  self.widget:button(
+  self.widget:buttons(
     awful.util.table.join(
       awful.button({}, 1, function()
         self.last = os.time()

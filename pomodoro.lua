@@ -39,7 +39,7 @@ local dialog = {
 
   work = {
     title = "Pomodoro has finished.",
-    test = "Time to take a break human!"
+    text = "Time to take a break human!"
   },
 
 }
@@ -123,5 +123,7 @@ function p:set()
   end)
 end
 
+
+setmetatable(p, {__call = p:set()})
 
 return pomodoro

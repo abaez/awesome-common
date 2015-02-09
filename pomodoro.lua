@@ -52,30 +52,26 @@ function p:new()
 end
 
 function p:set_time(t)
-    if t >= self.conf.limit then
-        t = os.date("%X", t - self.conf.limit)
-    else
-        t = os.date("%M:%S", t)
-    end
+  t = t >= self.conf.limit and os.date("%X", t - self.conf.limit) or
+    os.date("%M:%S", t)
 
-    self.widget:set_text(string.format(" Pomodoro: %s", t))
+  self.widget:set_text(string.format(" Pomodoro: %s", t))
 end
 
 function p:notify(dialog, duration, status)
-    naughty.notify {
-        bg = "#ff0000",
-        fg = "#aaaaaa",
-        title = dialog.title,
-        text = dialog.text,
-        timeout = 10, --in seconds
-        height = 720, -- make it annoying
-        width = 1280
+  naughty.notify {
+    bg = "#ff0000",
+    fg = "#aaaaaa",
+    title = dialog.title,
+    text = dialog.text,
+    timeout = 10, --in seconds
+    height = 720, -- make it annoying
+    width = 1280
+  }
 
-    }
-
-    self.status.missing = duration
-    self.status[1] = status
-    self.set_time(self, duration)
+  self.status.missing = duration
+  self.status[1] = status
+  self.set_time(self, duration)
 end
 
 function p:set()

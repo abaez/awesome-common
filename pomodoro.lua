@@ -7,6 +7,7 @@
 local wibox = require("wibox")
 local awful = require("awful")
 local naughty = require("naughty")
+--local timer = require("timer")
 
 local pomodoro = {}
 p = pomodoro
@@ -17,28 +18,29 @@ local tosec = function(min) return min * 60 end
 
 --- in minutes settings for pomodoro. use tosec to convert to seconds
 local conf = {
-    pause   = tosec(5),
-    work    = tosec(35),
-    limit   = tosec(60) -- limit for call
+  pause   = tosec(5),
+  work    = tosec(35),
+  limit   = tosec(60) -- limit for call
 }
 
 --- the status of the widget
 local status  = {
-    true,
-    missing = p.conf.work
+  true, -- running pomodoro
+  false, -- paused
+  missing = conf.work
 }
 
 --- dialog to be shown
 local dialog = {
-    pause = {
-        title = "The break has finished.",
-        text = "Let's get that coding rolling!"
-    },
+  pause = {
+    title = "The break has finished.",
+    text = "Let's get that coding rolling!"
+  },
 
-    work = {
-        title = "Pomodoro has finished.",
-        test = "Time to take a break human!"
-    },
+  work = {
+    title = "Pomodoro has finished.",
+    test = "Time to take a break human!"
+  },
 
 }
 
@@ -48,7 +50,7 @@ function p:new()
   self.dialog = dialog
 
   self.widget = wibox.widget.textbox()
-  self.timer  = timer{timeout = 1}
+  self.timer  = timer()
 end
 
 function p:set_time(t)
@@ -83,7 +85,13 @@ function p:set()
     awful.util.table.join(
       awful.button({}, 1, function()
         self.last = os.time()
-        self.timer:start()
+        if not self.status[2] then
+          self.status[2] = true
+          self.timer:start()
+        else
+          self.status[2] = false
+          self.timer:stop()
+        end
       end),
       awful.button({}, 2, function()
         self.timer:stop()
